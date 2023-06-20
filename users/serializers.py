@@ -5,7 +5,12 @@ from .models import CustomUser
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ("firstname", "lastname", "email", "password")
+        fields = (
+            "firstname",
+            "lastname",
+            "email",
+            "password",
+        )
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -13,7 +18,12 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ("email", "firstname", "lastname", "password")
+        fields = (
+            "email",
+            "firstname",
+            "lastname",
+            "password",
+        )
 
 
 class LoginUserSerializer(serializers.ModelSerializer):
@@ -21,4 +31,20 @@ class LoginUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ("email", "password")
+        fields = (
+            "email",
+            "password",
+        )
+
+
+class PublicUserSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            "id",
+            "firstname",
+            "lastname",
+            "registration_date",
+        )

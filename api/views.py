@@ -14,7 +14,7 @@ from .serializers import (
     CreateCommentSerializer,
 )
 from datetime import date
-from .models import Post, Comment, Message, Like, Friend
+from .models import Post, Comment, Like
 
 # Create your views here.
 
@@ -72,7 +72,7 @@ class ListPostsView(APIView):
         limit = request.query_params.get("limit") or 10
         page = request.query_params.get("page") or 1
 
-        posts = Post.objects.all()
+        posts = Post.objects.all().order_by("id")
 
         paginator = Paginator(posts, limit)
 
@@ -117,7 +117,7 @@ class ListPostCommentsView(APIView):
         limit = request.query_params.get("limit") or 10
         page = request.query_params.get("page") or 1
 
-        comments = Comment.objects.filter(post=post_pk)
+        comments = Comment.objects.filter(post=post_pk).order_by("id")
 
         paginator = Paginator(comments, limit)
         try:
@@ -235,6 +235,14 @@ class LikesPostView(APIView):
 
         user = request.user
         date_added = date.today()
+
+        try:
+            like = Like.objects.get(post=post, user=user)
+            return Response(
+                {"Error": "Like is already added"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        except Like.DoesNotExist:
+            pass
 
         like = Like(post=post, user=user, date_added=date_added)
         like.save()

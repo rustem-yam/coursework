@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post, Comment, Message, Like, Friend
+from .models import Post, Comment, Like
 
 
 class PostSerializer(serializers.ModelSerializer):

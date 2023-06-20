@@ -22,20 +22,6 @@ class Comment(models.Model):
         return self.text
 
 
-class Message(models.Model):
-    sender = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="sent_messages"
-    )
-    recipient = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="received_messages"
-    )
-    text = models.TextField()
-    send_date = models.DateField()
-
-    def __str__(self):
-        return self.text
-
-
 class Like(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -43,16 +29,3 @@ class Like(models.Model):
 
     def __str__(self):
         return str(self.post) + "_" + str(self.user)
-
-
-class Friend(models.Model):
-    user_1 = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="user_1_friends"
-    )
-    user_2 = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="user_2_friends"
-    )
-    date_added = models.DateField()
-
-    def __str__(self):
-        return str(self.user_1) + "_" + str(self.user_2)
