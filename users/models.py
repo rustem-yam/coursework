@@ -6,6 +6,9 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
     firstname = models.CharField(max_length=255, default="")
     lastname = models.CharField(max_length=255, default="")
     email = models.CharField(unique=True)
@@ -20,3 +23,6 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.firstname + "_" + self.lastname
+
+    def get_username(self):
+        return self.email

@@ -29,6 +29,7 @@ class CustomUserManager(BaseUserManager):
             return ValueError("Users must have an email address")
 
         user = self.model(
+            username=self.normalize_email(email),
             email=self.normalize_email(email),
             firstname=firstname,
             lastname=lastname,
