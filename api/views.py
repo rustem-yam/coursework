@@ -1,13 +1,20 @@
 from rest_framework import status, generics
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .serializers import CreatePostSerializer, PostSerializer
+from django.urls import reverse
+from django.conf import settings
+from .serializers import (
+    CreatePostSerializer,
+    PostSerializer,
+    CommentSerializer,
+    CreateCommentSerializer,
+)
 from datetime import date
-from .models import Post
+from .models import Post, Comment, Message, Like, Friend
 
 # Create your views here.
 
@@ -36,6 +43,28 @@ class CreatePostView(LoginRequiredMixin, APIView):
         return Response(PostSerializer(post).data, status=status.HTTP_201_CREATED)
 
 
+class DeletePostView(LoginRequiredMixin, APIView):
+    def delete(self, request, post_pk, format=None):
+        try:
+            post = Post.objects.get(pk=post_pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        if post.user != request.user:
+            return Response(
+                {"Error": "You do not have permission to delete this post"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        post.delete()
+        return Response(
+            {"Success": "Post deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT,
+        )
+
+
 class ListPostsView(APIView):
     serializer_class = PostSerializer
 
@@ -62,9 +91,9 @@ class ListPostsView(APIView):
 class RetrievePostView(APIView):
     serializer_class = PostSerializer
 
-    def get(self, request, pk, format=None):
+    def get(self, request, post_pk, format=None):
         try:
-            post = Post.objects.get(pk=pk)
+            post = Post.objects.get(pk=post_pk)
         except Post.DoesNotExist:
             return Response(
                 {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
@@ -72,3 +101,163 @@ class RetrievePostView(APIView):
 
         serializer = self.serializer_class(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ListPostCommentsView(APIView):
+    serializer_class = CommentSerializer
+
+    def get(self, request, post_pk, format=None):
+        try:
+            post = Post.objects.get(pk=post_pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        limit = request.query_params.get("limit") or 10
+        page = request.query_params.get("page") or 1
+
+        comments = Comment.objects.filter(post=post_pk)
+
+        paginator = Paginator(comments, limit)
+        try:
+            comments_page = paginator.page(page)
+        except Exception as e:
+            return Response(
+                {"Bad Request": "Invalid page number"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = self.serializer_class(comments_page, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RetrieveCommentView(APIView):
+    serializer_class = CommentSerializer
+
+    def get(self, request, post_pk, comment_pk, format=None):
+        try:
+            post = Post.objects.get(pk=post_pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            comment = Comment.objects.get(post=post, pk=comment_pk)
+        except Comment.DoesNotExist:
+            return Response(
+                {"Not Found": "Comment not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = self.serializer_class(comment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CreateCommentView(LoginRequiredMixin, APIView):
+    serializer_class = CreateCommentSerializer
+
+    def post(self, request, post_pk, format=None):
+        try:
+            post = Post.objects.get(pk=post_pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = self.serializer_class(data=request.data)
+        if not (serializer.is_valid()):
+            return Response(
+                {"Bad Request": "Invalid data..."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        text = serializer.data.get("text")
+        user = request.user
+        creation_date = date.today()
+
+        comment = Comment(text=text, user=user, creation_date=creation_date, post=post)
+        comment.save()
+        return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
+
+
+class DeleteCommentView(LoginRequiredMixin, APIView):
+    def delete(self, request, post_pk, comment_pk, format=None):
+        try:
+            post = Post.objects.get(pk=post_pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            comment = Comment.objects.get(post=post_pk, pk=comment_pk)
+        except Comment.DoesNotExist:
+            return Response(
+                {"Not Found": "Comment not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        if comment.user != request.user:
+            return Response(
+                {"Error": "You do not have permission to delete this comment"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        comment.delete()
+        return Response(
+            {"Success": "Comment deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT,
+        )
+
+
+class LikesPostView(APIView):
+    def get(self, request, post_pk, format=None):
+        try:
+            post = Post.objects.get(pk=post_pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        likes = Like.objects.filter(post=post)
+
+        return Response(likes.count(), status=status.HTTP_200_OK)
+
+    def post(self, request, post_pk, format=None):
+        if not request.user.is_authenticated:
+            login_url = reverse(settings.LOGIN_URL)
+            return redirect(login_url)
+
+        try:
+            post = Post.objects.get(pk=post_pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        user = request.user
+        date_added = date.today()
+
+        like = Like(post=post, user=user, date_added=date_added)
+        like.save()
+        return Response(str(like), status=status.HTTP_201_CREATED)
+
+    def delete(self, request, post_pk, format=None):
+        if not request.user.is_authenticated:
+            login_url = reverse(settings.LOGIN_URL)
+            return redirect(login_url)
+
+        try:
+            post = Post.objects.get(pk=post_pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            like = Like.objects.get(post=post, user=request.user)
+        except Like.DoesNotExist:
+            return Response(
+                {"Not Found": "Like not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        like.delete()
+        return Response({"Success": "Like deleted"}, status=status.HTTP_204_NO_CONTENT)

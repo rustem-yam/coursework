@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post
+from .models import Post, Comment, Message, Like, Friend
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -16,11 +16,26 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class CreatePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ("text",)
+
+
+class CommentSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
 
     class Meta:
-        model = Post
+        model = Comment
         fields = (
             "id",
+            "post",
+            "user",
             "text",
+            "creation_date",
         )
+
+
+class CreateCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ("text",)

@@ -75,7 +75,7 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 )
 
-LOGIN_URL = "/users/login"
+LOGIN_URL = "login"
 
 WSGI_APPLICATION = "coursework.wsgi.application"
 

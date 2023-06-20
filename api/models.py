@@ -42,7 +42,7 @@ class Like(models.Model):
     date_added = models.DateField()
 
     def __str__(self):
-        return self.post + "_" + self.user
+        return str(self.post) + "_" + str(self.user)
 
 
 class Friend(models.Model):
@@ -55,4 +55,4 @@ class Friend(models.Model):
     date_added = models.DateField()
 
     def __str__(self):
-        return self.user_1 + "_" + self.user_2
+        return str(self.user_1) + "_" + str(self.user_2)
