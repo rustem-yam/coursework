@@ -73,10 +73,10 @@ class LoginUserView(APIView):
         email = serializer.data.get("email")
         password = serializer.data.get("password")
 
-        user = authenticate(request, email=email, password=password)
+        user = CustomUser.objects.authenticate(request, email=email, password=password)
         if user is None:
             return Response(
-                {"Login Error": "Invalid email or password"},
+                {"Login Error": f"Invalid email or password {user}"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

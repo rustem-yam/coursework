@@ -8,14 +8,15 @@ from django.db import models
 class CustomUser(AbstractUser):
     firstname = models.CharField(max_length=255, default="")
     lastname = models.CharField(max_length=255, default="")
-    email = models.EmailField(unique=True, default="test@test.test")
+    email = models.CharField(unique=True)
     password = models.CharField(max_length=255)
     registration_date = models.DateField(default="2000-01-01")
-    objects = CustomUserManager()
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
+
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.firstname + "_" + self.lastname

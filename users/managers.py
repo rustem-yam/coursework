@@ -3,6 +3,19 @@ from datetime import date
 
 
 class CustomUserManager(BaseUserManager):
+    def authenticate(self, request, email=None, password=None, **kwargs):
+        if email is None:
+            return None
+
+        user = self.filter(email=email)[0]
+        if not user:
+            return None
+
+        if user.check_password(password):
+            return user
+
+        return None
+
     def create_user(
         self,
         email,
