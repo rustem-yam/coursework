@@ -21,11 +21,14 @@ class CustomUser(AbstractUser):
 
     objects = CustomUserManager()
 
-    def __str__(self):
-        return self.firstname + "_" + self.lastname
-
     def get_username(self):
         return self.email
+
+    def get_id(self):
+        return self.id
+
+    def __str__(self):
+        return str(self.firstname) + " " + str(self.lastname)
 
 
 class Friend(models.Model):
@@ -38,18 +41,4 @@ class Friend(models.Model):
     date_added = models.DateField()
 
     def __str__(self):
-        return str(self.user_1) + "_" + str(self.user_2)
-
-
-class Message(models.Model):
-    sender = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="sent_messages"
-    )
-    recipient = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="received_messages"
-    )
-    text = models.TextField()
-    send_date = models.DateField()
-
-    def __str__(self):
-        return self.text
+        return str(self.user_1) + " " + str(self.user_2)

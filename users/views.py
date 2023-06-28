@@ -13,7 +13,7 @@ from .serializers import (
     LoginUserSerializer,
     PublicUserSerializer,
 )
-from .models import CustomUser, Friend, Message
+from .models import CustomUser, Friend
 from rest_framework.response import Response
 import json
 from datetime import date
@@ -159,8 +159,11 @@ class FriendUserView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        users_pair = [user_1, user_2]
+        users_pair.sort(key=CustomUser.get_id)
+
         try:
-            friendship = Friend.objects.get(user_1=user_1, user_2=user_2)
+            friendship = Friend.objects.get(user_1=users_pair[0], user_2=users_pair[1])
             return Response(
                 {"Error": "User is already a friend"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -170,7 +173,9 @@ class FriendUserView(APIView):
 
         date_added = date.today()
 
-        friend = Friend(user_1=user_1, user_2=user_2, date_added=date_added)
+        friend = Friend(
+            user_1=users_pair[0], user_2=users_pair[1], date_added=date_added
+        )
 
         friend.save()
         return Response(
@@ -198,8 +203,11 @@ class UnfriendUserView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        users_pair = [user_1, user_2]
+        users_pair.sort(key=CustomUser.get_id)
+
         try:
-            friendship = Friend.objects.get(user_1=user_1, user_2=user_2)
+            friendship = Friend.objects.get(user_1=users_pair[0], user_2=users_pair[1])
         except Friend.DoesNotExist:
             return Response(
                 {"Error": "User is not a friend"}, status=status.HTTP_400_BAD_REQUEST

@@ -9,7 +9,7 @@ class Post(models.Model):
     creation_date = models.DateField()
 
     def __str__(self):
-        return self.text
+        return str(self.user) + ": " + str(self.text)
 
 
 class Comment(models.Model):
@@ -19,7 +19,7 @@ class Comment(models.Model):
     creation_date = models.DateField()
 
     def __str__(self):
-        return self.text
+        return str(self.user) + ' at "' + str(self.post) + '": ' + str(self.text)
 
 
 class Like(models.Model):
@@ -28,4 +28,4 @@ class Like(models.Model):
     date_added = models.DateField()
 
     def __str__(self):
-        return str(self.post) + "_" + str(self.user)
+        return str(self.user) + ' at "' + str(self.post) + '"'

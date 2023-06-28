@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Friend, Message
+from .models import CustomUser, Friend
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 
@@ -69,5 +69,4 @@ class CustomUserAdmin(UserAdmin):
 # Register your models here.
 
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Message)
 admin.site.register(Friend)
