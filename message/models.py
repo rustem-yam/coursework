@@ -1,5 +1,8 @@
+import datetime
 from django.db import models
+from django.utils import timezone
 from users.models import CustomUser
+from django.contrib import admin
 
 # Create your models here.
 
@@ -12,7 +15,24 @@ class Message(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name="received_messages"
     )
     text = models.TextField()
-    send_date = models.DateField()
+    send_date = models.DateTimeField()
+
+    @admin.display(
+        boolean=True,
+        ordering="send_date",
+        description="Sent recently?",
+    )
+    def was_sent_recently(self):
+        now = timezone.now()
+        return now - datetime.timedelta(days=1) <= self.send_date <= now
 
     def __str__(self):
-        return str(self.sender) + " -> " + str(self.recipient) + ": " + str(self.text)
+        return (
+            str(self.send_date)
+            + " "
+            + str(self.sender)
+            + " -> "
+            + str(self.recipient)
+            + ": "
+            + str(self.text)
+        )

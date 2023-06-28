@@ -1,0 +1,44 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'message/style.css' %}" />
+
+<div class="chat">
+  <a href="{% url 'message:index' %}" class="chat__index">Message index</a>
+  <div class="chat__container">
+    {% if messages %}
+    <ul class="message__list">
+      {% for message in messages %}
+      <li class="message__item">
+        <div class="message__flex">
+          <p class="message__text">
+            <span class="message__sender">{{message.sender}} </span>
+            ->
+            <span class="message__recipient"> {{message.recipient}}</span>
+            : {{message.text}}
+          </p>
+          <span class="message__date"> {{message.send_date}}</span>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="chat__empty">
+      There are no messages with {{user_1}} and {{user_2}} yet.
+    </p>
+    {% endif %}
+    <form
+      class="chat__form"
+      action="{% url 'message:send' user_2.id %}"
+      method="post"
+    >
+      {% csrf_token %}
+      <input
+        class="chat__form-text"
+        type="text"
+        name="text"
+        placeholder="type your message"
+      />
+      <input class="chat__form-submit" type="submit" value="Send" />
+    </form>
+  </div>
+</div>
