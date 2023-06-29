@@ -31,7 +31,10 @@ class MessageAdmin(admin.ModelAdmin):
         "text",
     ]
 
-    raw_id_fields = ["sender", "recipient"]
+    raw_id_fields = [
+        "sender",
+        "recipient",
+    ]
 
 
 admin.site.register(Message, MessageAdmin)
