@@ -29,6 +29,10 @@ class MessageAdmin(admin.ModelAdmin):
     ]
     search_fields = [
         "text",
+        "sender__firstname",
+        "sender__lastname",
+        "recipient__firstname",
+        "recipient__firstname",
     ]
 
     raw_id_fields = [

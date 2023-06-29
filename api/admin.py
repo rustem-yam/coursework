@@ -24,20 +24,34 @@ class PostAdmin(admin.ModelAdmin):
     inlines = [CommentInline, LikeInline]
     list_display = ["id", "user", "creation_date", "text"]
     list_filter = ["user", "creation_date", "text"]
-    search_fields = ["text"]
+    search_fields = [
+        "text",
+        "user__firstname",
+        "user__lastname",
+    ]
 
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ["id", "user", "post", "creation_date", "text"]
     date_hierarchy = "creation_date"
     list_filter = ["user", "post", "creation_date", "text"]
-    search_fields = ["text"]
+    search_fields = [
+        "text",
+        "user__firstname",
+        "user__lastname",
+        "post__text",
+    ]
 
 
 class LikeAdmin(admin.ModelAdmin):
     list_display = ["id", "user", "post", "date_added"]
     date_hierarchy = "date_added"
     list_filter = ["user", "post", "date_added"]
+    search_fields = [
+        "post__text",
+        "user__firstname",
+        "user__lastname",
+    ]
 
 
 admin.site.register(Post, PostAdmin)
