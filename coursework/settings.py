@@ -36,6 +36,7 @@ INTERNAL_IPS = [
 
 INSTALLED_APPS = [
     "rest_framework",
+    "django_filters",
     "api.apps.ApiConfig",
     "users.apps.UsersConfig",
     "message.apps.MessageConfig",
@@ -90,14 +91,17 @@ WSGI_APPLICATION = "coursework.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# To use Neon with Django, you have to create a Project on Neon and specify the project connection settings in your settings.py in the same way as for standalone Postgres.
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "railway",
-        "USER": "postgres",
-        "PASSWORD": "6cMe4WA5QX9krakazuTc",
-        "HOST": "containers-us-west-140.railway.app",
-        "PORT": "6126",
+        "NAME": "social",
+        "USER": "rustem-yam",
+        "PASSWORD": "5FiLdgu1SbUr",
+        "HOST": "ep-still-moon-04308909.eu-central-1.aws.neon.tech",
+        "PORT": "5432",
+        "OPTIONS": {"sslmode": "require"},
     }
 }
 

@@ -5,6 +5,8 @@ from rest_framework import status, generics
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import login, authenticate, logout
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination
 
 # from django.shortcuts import redirect
 from .serializers import (
@@ -17,6 +19,13 @@ from .models import CustomUser, Friend
 from rest_framework.response import Response
 import json
 from datetime import date
+
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    max_page_size = 100
+    page_size_query_param = "limit"
+    page_query_param = "page"
 
 
 # Create your views here.
@@ -101,27 +110,35 @@ class LogoutUserView(APIView):
         return Response({"Logout successfully"}, status=status.HTTP_200_OK)
 
 
-class ListUsersView(APIView):
+# class ListUsersView(APIView):
+#     serializer_class = PublicUserSerializer
+
+#     def get(self, request, format=None):
+#         limit = request.query_params.get("limit") or 10
+#         page = request.query_params.get("page") or 1
+
+#         users = CustomUser.objects.all().order_by("id")
+
+#         paginator = Paginator(users, limit)
+
+#         try:
+#             users_page = paginator.page(page)
+#         except Exception as e:
+#             return Response(
+#                 {"Bad Request": "Invalid page number"},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+
+#         serializer = self.serializer_class(users_page, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ListUsersView(generics.ListAPIView):
+    queryset = CustomUser.objects.all()
     serializer_class = PublicUserSerializer
-
-    def get(self, request, format=None):
-        limit = request.query_params.get("limit") or 10
-        page = request.query_params.get("page") or 1
-
-        users = CustomUser.objects.all().order_by("id")
-
-        paginator = Paginator(users, limit)
-
-        try:
-            users_page = paginator.page(page)
-        except Exception as e:
-            return Response(
-                {"Bad Request": "Invalid page number"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        serializer = self.serializer_class(users_page, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["firstname", "lastname", "registration_date"]
+    pagination_class = CustomPagination
 
 
 class RetrieveUserView(APIView):
