@@ -23,7 +23,7 @@ def index(request):
     return HttpResponse("Hello, world. You're at the api index.")
 
 
-class CreatePostView(LoginRequiredMixin, APIView):
+class PostsCreateView(LoginRequiredMixin, APIView):
     serializer_class = CreatePostSerializer
 
     def post(self, request, format=None):
@@ -43,7 +43,7 @@ class CreatePostView(LoginRequiredMixin, APIView):
         return Response(PostSerializer(post).data, status=status.HTTP_201_CREATED)
 
 
-class DeletePostView(LoginRequiredMixin, APIView):
+class PostsDeleteView(LoginRequiredMixin, APIView):
     def delete(self, request, post_pk, format=None):
         try:
             post = Post.objects.get(pk=post_pk)
@@ -65,7 +65,7 @@ class DeletePostView(LoginRequiredMixin, APIView):
         )
 
 
-class ListPostsView(APIView):
+class PostsListView(APIView):
     serializer_class = PostSerializer
 
     def get(self, request, format=None):
@@ -88,7 +88,7 @@ class ListPostsView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class RetrievePostView(APIView):
+class PostsRetrieveView(APIView):
     serializer_class = PostSerializer
 
     def get(self, request, post_pk, format=None):
@@ -103,7 +103,7 @@ class RetrievePostView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ListPostCommentsView(APIView):
+class CommentsListsPostView(APIView):
     serializer_class = CommentSerializer
 
     def get(self, request, post_pk, format=None):
@@ -132,7 +132,7 @@ class ListPostCommentsView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class RetrieveCommentView(APIView):
+class CommentsRetrieveView(APIView):
     serializer_class = CommentSerializer
 
     def get(self, request, post_pk, comment_pk, format=None):
@@ -154,7 +154,7 @@ class RetrieveCommentView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CreateCommentView(LoginRequiredMixin, APIView):
+class CommentsCreateView(LoginRequiredMixin, APIView):
     serializer_class = CreateCommentSerializer
 
     def post(self, request, post_pk, format=None):
@@ -180,7 +180,7 @@ class CreateCommentView(LoginRequiredMixin, APIView):
         return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
 
 
-class DeleteCommentView(LoginRequiredMixin, APIView):
+class CommentsDeleteView(LoginRequiredMixin, APIView):
     def delete(self, request, post_pk, comment_pk, format=None):
         try:
             post = Post.objects.get(pk=post_pk)

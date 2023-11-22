@@ -29,7 +29,7 @@ class CustomPagination(PageNumberPagination):
 
 
 # Create your views here.
-class RegisterUserView(APIView):
+class UsersRegisterView(APIView):
     serializer_class = RegisterUserSerializer
 
     def post(self, request, format=None):
@@ -70,7 +70,7 @@ class RegisterUserView(APIView):
         )
 
 
-class LoginUserView(APIView):
+class UsersLoginView(APIView):
     serializer_class = LoginUserSerializer
 
     def post(self, request, format=None):
@@ -104,13 +104,13 @@ class LoginUserView(APIView):
         )
 
 
-class LogoutUserView(APIView):
+class UsersLogoutView(APIView):
     def post(self, request, format=None):
         logout(request)
         return Response({"Logout successfully"}, status=status.HTTP_200_OK)
 
 
-# class ListUsersView(APIView):
+# class UsersListView(APIView):
 #     serializer_class = PublicUserSerializer
 
 #     def get(self, request, format=None):
@@ -133,7 +133,7 @@ class LogoutUserView(APIView):
 #         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ListUsersView(generics.ListAPIView):
+class UsersListView(generics.ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = PublicUserSerializer
     filter_backends = [DjangoFilterBackend]
@@ -141,7 +141,7 @@ class ListUsersView(generics.ListAPIView):
     pagination_class = CustomPagination
 
 
-class RetrieveUserView(APIView):
+class UsersRetrieveView(APIView):
     serializer_class = PublicUserSerializer
 
     def get(self, request, user_pk, format=None):
@@ -156,7 +156,7 @@ class RetrieveUserView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class FriendUserView(APIView):
+class UsersFriendView(APIView):
     def post(self, request, user_pk, format=None):
         if not request.user.is_authenticated:
             login_url = reverse(settings.LOGIN_URL)
@@ -200,7 +200,7 @@ class FriendUserView(APIView):
         )
 
 
-class UnfriendUserView(APIView):
+class UsersUnfriendView(APIView):
     def post(self, request, user_pk, format=None):
         if not request.user.is_authenticated:
             login_url = reverse(settings.LOGIN_URL)
