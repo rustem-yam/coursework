@@ -24,6 +24,9 @@ class CommentResource(resources.ModelResource):
         post = getattr(comment.post, "id", "unknown")
         return "%s commented post %s" % (author, post)
 
-    def after_export(self, queryset, *args, **kwargs):
+    def after_export(self, queryset, data, *args, **kwargs):
+        current_time = datetime.now()
         logger = logging.getLogger(__name__)
-        logger.info("Data export from table Comments successfully completed")
+        logger.info(
+            f"[{current_time}]Data export from table Comments successfully completed"
+        )
