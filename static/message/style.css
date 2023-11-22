@@ -1,0 +1,92 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #cbefff url("images/blue-cats.jpg") no-repeat;
+  height: 100vh;
+}
+
+.chat {
+  padding: 2rem 4rem 0;
+  font-size: 20px;
+}
+.chat__index {
+  background-color: #fff;
+  padding: 1rem;
+  text-decoration: none;
+  border-radius: 15px;
+  color: black;
+}
+.chat__index:hover {
+  text-decoration: underline;
+}
+.chat__container {
+  padding: 0 3rem;
+  margin: 2rem 0 0;
+}
+.chat__empty {
+  font-style: italic;
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 1rem;
+}
+.chat__form {
+  width: 100%;
+  position: relative;
+}
+.chat__form-text {
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  width: 90%;
+  border: 4px solid #a1beca;
+  border-right: transparent;
+}
+.chat__form-submit {
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  background-color: #cfdce6;
+  cursor: pointer;
+  width: 10%;
+  border: 4px solid #a1beca;
+  border-left: transparent;
+  position: absolute;
+}
+.chat__form-submit:hover {
+  background-color: #b1bcc4;
+}
+.chat__form input {
+  padding: 1rem 2rem;
+  font-size: 18px;
+}
+
+.message__list {
+  background-color: #fff;
+  border-radius: 1rem;
+  border: 4px solid #a1beca;
+  padding: 1rem;
+  height: 60vh;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+.message__item {
+  list-style: none;
+}
+.message__flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.message__text {
+  max-width: 80%;
+  margin: 0.8rem 0;
+}
+.message__sender {
+  font-weight: bold;
+  font-style: italic;
+}
+.message__recipient {
+  color: #35a700;
+}
+.message__date {
+  color: #585858;
+  font-size: 18px;
+}/*# sourceMappingURL=style.css.map */

@@ -1,7 +1,10 @@
 from django.contrib import admin
+from import_export.admin import ExportMixin
 
 # Register your models here.
+from datetime import date
 from .models import Post, Comment, Like
+from .resources import PostResource, CommentResource
 
 
 class CommentInline(admin.StackedInline):
@@ -14,7 +17,9 @@ class LikeInline(admin.TabularInline):
     extra = 1
 
 
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(ExportMixin, admin.ModelAdmin):
+    resource_class = PostResource
+
     fieldsets = [
         ("User Info", {"fields": ["user"]}),
         ("Date Info", {"fields": ["creation_date"]}),
@@ -30,8 +35,18 @@ class PostAdmin(admin.ModelAdmin):
         "user__lastname",
     ]
 
+    def get_export_queryset(self, request):
+        today = date.today()
 
-class CommentAdmin(admin.ModelAdmin):
+        queryset = super().get_export_queryset(request)
+
+        queryset = queryset.filter(creation_date__lte=today)
+
+        return queryset
+
+
+class CommentAdmin(ExportMixin, admin.ModelAdmin):
+    resource_class = CommentResource
     list_display = ["id", "user", "post", "creation_date", "text"]
     date_hierarchy = "creation_date"
     list_filter = ["user", "post", "creation_date", "text"]

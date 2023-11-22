@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "simple_history",
+    "import_export",
     "api.apps.ApiConfig",
     "users.apps.UsersConfig",
     "message.apps.MessageConfig",
@@ -89,6 +90,24 @@ LOGIN_URL = "login"
 
 WSGI_APPLICATION = "coursework.wsgi.application"
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "file.log",
+        },
+    },
+    "loggers": {
+        "api": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -129,6 +148,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
