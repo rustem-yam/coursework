@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, Friend
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -11,6 +11,12 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "password",
         )
+
+
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friend
+        fields = ("user_1", "user_2")
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):

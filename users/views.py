@@ -6,8 +6,10 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import login, authenticate, logout
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Q
 from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 
 # from django.shortcuts import redirect
 from .serializers import (
@@ -15,6 +17,7 @@ from .serializers import (
     RegisterUserSerializer,
     LoginUserSerializer,
     PublicUserSerializer,
+    FriendSerializer,
 )
 from .models import CustomUser, Friend
 from rest_framework.response import Response
@@ -161,6 +164,38 @@ class UsersRetrieveView(APIView):
             )
 
         serializer = self.serializer_class(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UsersFriendsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.id
+
+        user_friends = Friend.objects.filter(
+            Q(user_1_id=user_id) | Q(user_2_id=user_id)
+        )
+
+        serializer = FriendSerializer(user_friends, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class UsersFofView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.id
+
+        friends_of_friends = (
+            Friend.objects.filter(
+                Q(user_1__user_2_friends__user_1=user_id)
+                | Q(user_2__user_1_friends__user_2=user_id)
+            )
+            .filter(~Q(user_1=user_id) & ~Q(user_2=user_id))
+            .distinct()
+        )
+
+        serializer = FriendSerializer(friends_of_friends, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

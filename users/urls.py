@@ -7,10 +7,14 @@ from .views import (
     UsersRetrieveView,
     UsersFriendView,
     UsersUnfriendView,
+    UsersFofView,
+    UsersFriendsView,
 )
 
 urlpatterns = [
     path("", UsersListView.as_view(), name="list-users"),
+    path("friends", UsersFriendsView.as_view(), name="friends"),
+    path("fof", UsersFofView.as_view(), name="friends-of-friends"),
     path("<int:user_pk>/", UsersRetrieveView.as_view(), name="retrieve-user"),
     path("<int:user_pk>/friend", UsersFriendView.as_view(), name="friend-user"),
     path("<int:user_pk>/unfriend", UsersUnfriendView.as_view(), name="unfriend-user"),
