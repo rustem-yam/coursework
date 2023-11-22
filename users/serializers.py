@@ -16,6 +16,12 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterUserSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=254)
 
+    def validate_firstname(self, firstname):
+        if len(firstname) > 20:
+            raise serializers.ValidationError(
+                "У вас слишком длинное имя. Введите покороче или смените в ЗАГСе"
+            )
+
     class Meta:
         model = CustomUser
         fields = (

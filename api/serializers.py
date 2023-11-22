@@ -16,6 +16,14 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class CreatePostSerializer(serializers.ModelSerializer):
+    def validate_text(self, text):
+        forbidden_word = "треш"
+        if forbidden_word.lower() in text.lower():
+            raise serializers.ValidationError(
+                "В постах запрещено использовать %s" % forbidden_word
+            )
+        return text
+
     class Meta:
         model = Post
         fields = ("text",)

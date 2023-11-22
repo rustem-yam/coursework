@@ -31,7 +31,8 @@ class PostsCreateView(LoginRequiredMixin, APIView):
         serializer = self.serializer_class(data=request.data)
         if not (serializer.is_valid()):
             return Response(
-                {"Bad Request": "Invalid data..."}, status=status.HTTP_400_BAD_REQUEST
+                {"Bad Request": "Invalid data... %s" % serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         text = serializer.data.get("text")
@@ -114,9 +115,9 @@ class PostsViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     @action(methods=["POST"], detail=True)
-    def delete(self, request, pk=None):
+    def delete(self, request, post_pk=None):
         try:
-            post = Post.objects.get(pk=pk)
+            post = Post.objects.get(pk=post_pk)
         except Post.DoesNotExist:
             return Response(
                 {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND

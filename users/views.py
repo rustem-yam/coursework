@@ -37,7 +37,8 @@ class UsersRegisterView(APIView):
         serializer = self.serializer_class(data=request.data)
         if not (serializer.is_valid()):
             return Response(
-                {"Bad Request": "Invalid data..."}, status=status.HTTP_400_BAD_REQUEST
+                {"Bad Request": "Invalid data... %s" % serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         email = serializer.data.get("email")
