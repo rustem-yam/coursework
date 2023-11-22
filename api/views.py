@@ -1,6 +1,7 @@
-from rest_framework import status, generics
+from rest_framework import status, generics, viewsets
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
+from rest_framework.decorators import action
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -43,10 +44,79 @@ class PostsCreateView(LoginRequiredMixin, APIView):
         return Response(PostSerializer(post).data, status=status.HTTP_201_CREATED)
 
 
-class PostsDeleteView(LoginRequiredMixin, APIView):
-    def delete(self, request, post_pk, format=None):
+# class PostsDeleteView(LoginRequiredMixin, APIView):
+#     def delete(self, request, post_pk, format=None):
+#         try:
+#             post = Post.objects.get(pk=post_pk)
+#         except Post.DoesNotExist:
+#             return Response(
+#                 {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+#             )
+
+#         if post.user != request.user:
+#             return Response(
+#                 {"Error": "You do not have permission to delete this post"},
+#                 status=status.HTTP_403_FORBIDDEN,
+#             )
+
+#         post.delete()
+#         return Response(
+#             {"Success": "Post deleted successfully"},
+#             status=status.HTTP_204_NO_CONTENT,
+#         )
+
+
+# class PostsListView(APIView):
+#     serializer_class = PostSerializer
+
+#     def get(self, request, format=None):
+#         limit = request.query_params.get("limit") or 10
+#         page = request.query_params.get("page") or 1
+
+#         posts = Post.objects.all().order_by("id")
+
+#         paginator = Paginator(posts, limit)
+
+#         try:
+#             posts_page = paginator.page(page)
+#         except Exception as e:
+#             return Response(
+#                 {"Bad Request": "Invalid page number"},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+
+#         serializer = self.serializer_class(posts_page, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PostsRetrieveView(APIView):
+    serializer_class = PostSerializer
+
+    def get(self, request, post_pk, format=None):
         try:
             post = Post.objects.get(pk=post_pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = self.serializer_class(post, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PostsViewSet(viewsets.ViewSet):
+    serializer_class = PostSerializer
+
+    @action(methods=["GET"], detail=False)
+    def get_all(self, request):
+        queryset = Post.objects.all().order_by("id")
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(methods=["POST"], detail=True)
+    def delete(self, request, pk=None):
+        try:
+            post = Post.objects.get(pk=pk)
         except Post.DoesNotExist:
             return Response(
                 {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
@@ -63,44 +133,6 @@ class PostsDeleteView(LoginRequiredMixin, APIView):
             {"Success": "Post deleted successfully"},
             status=status.HTTP_204_NO_CONTENT,
         )
-
-
-class PostsListView(APIView):
-    serializer_class = PostSerializer
-
-    def get(self, request, format=None):
-        limit = request.query_params.get("limit") or 10
-        page = request.query_params.get("page") or 1
-
-        posts = Post.objects.all().order_by("id")
-
-        paginator = Paginator(posts, limit)
-
-        try:
-            posts_page = paginator.page(page)
-        except Exception as e:
-            return Response(
-                {"Bad Request": "Invalid page number"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        serializer = self.serializer_class(posts_page, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class PostsRetrieveView(APIView):
-    serializer_class = PostSerializer
-
-    def get(self, request, post_pk, format=None):
-        try:
-            post = Post.objects.get(pk=post_pk)
-        except Post.DoesNotExist:
-            return Response(
-                {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = self.serializer_class(post)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CommentsListsPostView(APIView):

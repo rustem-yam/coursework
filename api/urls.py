@@ -1,9 +1,10 @@
 from django.urls import path
 from .views import (
+    PostsViewSet,
     PostsCreateView,
-    PostsListView,
     PostsRetrieveView,
-    PostsDeleteView,
+    # PostsListView,
+    # PostsDeleteView,
     CommentsListsPostView,
     CommentsRetrieveView,
     CommentsCreateView,
@@ -17,9 +18,13 @@ urlpatterns = [
     path("", views.index, name="index"),
     # Posts
     path("posts/create/", PostsCreateView.as_view(), name="create-post"),
-    path("posts/", PostsListView.as_view(), name="list-posts"),
+    path("posts/", PostsViewSet.as_view({"get": "get_all"}), name="list-posts"),
     path("posts/<int:post_pk>/", PostsRetrieveView.as_view(), name="retrieve-post"),
-    path("posts/<int:post_pk>/delete/", PostsDeleteView.as_view(), name="delete-post"),
+    path(
+        "posts/<int:post_pk>/delete/",
+        PostsViewSet.as_view({"post": "delete"}),
+        name="delete-post",
+    ),
     # Comments
     path(
         "posts/<int:post_pk>/comments/",
