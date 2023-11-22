@@ -37,6 +37,7 @@ INTERNAL_IPS = [
 INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
+    "simple_history",
     "api.apps.ApiConfig",
     "users.apps.UsersConfig",
     "message.apps.MessageConfig",
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

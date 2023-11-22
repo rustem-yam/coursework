@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import login, authenticate, logout
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
 
 # from django.shortcuts import redirect
@@ -136,8 +137,14 @@ class UsersLogoutView(APIView):
 class UsersListView(generics.ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = PublicUserSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
     filterset_fields = ["firstname", "lastname", "registration_date"]
+    search_fields = ["firstname", "lastname"]
+    ordering_fields = "__all__"
     pagination_class = CustomPagination
 
 

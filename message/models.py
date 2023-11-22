@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from users.models import CustomUser
 from django.contrib import admin
+from simple_history.models import HistoricalRecords
 
 # Create your models here.
 
@@ -16,6 +17,7 @@ class Message(models.Model):
     )
     text = models.TextField()
     send_date = models.DateTimeField()
+    history = HistoricalRecords()
 
     @admin.display(
         boolean=True,
