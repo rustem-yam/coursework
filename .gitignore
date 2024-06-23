@@ -5,5 +5,5 @@ file.log
 __pycache__
 .venv
 requirements.in
-settings.py
+coursework/settings.py
 celerybeat-schedule
