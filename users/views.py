@@ -96,14 +96,18 @@ class UsersLoginView(APIView):
         email = serializer.data.get("email")
         password = serializer.data.get("password")
 
-        user = CustomUser.objects.authenticate(request, email=email, password=password)
+        user = CustomUser.objects.authenticate(
+            request,
+            email=email,
+            password=password,
+        )
         if user is None:
             return Response(
                 {"Login Error": f"Invalid email or password {user}"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        login(request, user)
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
         return Response(
             {"Login Successfully": f"{user}"}, status=status.HTTP_202_ACCEPTED
         )
@@ -166,6 +170,7 @@ class UsersRetrieveView(APIView):
         serializer = self.serializer_class(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class UsersFriendsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -178,7 +183,7 @@ class UsersFriendsView(APIView):
 
         serializer = FriendSerializer(user_friends, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
 
 class UsersFofView(APIView):
     permission_classes = [IsAuthenticated]

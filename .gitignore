@@ -1,3 +1,6 @@
 .prettierignore
 documentation.pdf
 file.log
+__pycache__
+.venv
+requirements.in

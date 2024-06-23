@@ -1,0 +1,78 @@
+services:
+    django:
+        build: .
+        command: python manage.py runserver 0.0.0.0:8000
+        volumes:
+            - ./:/usr/src/app/
+        ports:
+            - "8000:8000"
+        environment:
+            - DJANGO_SETTINGS_MODULE=coursework.settings
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+            - DEBUG=1
+        depends_on:
+            - redis
+            - mailhog
+
+    redis:
+        image: redis:alpine
+        ports:
+            - "6379:6379"
+
+    celery:
+        build: .
+        command: celery -A coursework.celery worker -l info -E
+        volumes:
+            - ./:/usr/src/app/
+        environment:
+            - DJANGO_SETTINGS_MODULE=coursework.settings
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+            - DEBUG=1
+        depends_on:
+            - django
+            - redis
+
+    celery-beat:
+        build: .
+        command: celery -A coursework.celery beat -l info
+        volumes:
+            - ./:/usr/src/app/
+        environment:
+            - DJANGO_SETTINGS_MODULE=coursework.settings
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+            - DEBUG=1
+        depends_on:
+            - django
+            - redis
+
+    flower:
+        build: .
+        command: celery -A coursework.celery flower --basic_auth=admin:admin
+        volumes:
+            - ./:/usr/src/app/
+        environment:
+            - DJANGO_SETTINGS_MODULE=coursework.settings
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+            - DEBUG=1
+        depends_on:
+            - django
+            - celery
+        ports:
+            - "5555:5555"
+
+    mailhog:
+        image: mailhog/mailhog
+        expose:
+            - 1025
+            - 8025
+        ports:
+            - "1025:1025"
+            - "8025:8025"

@@ -24,7 +24,7 @@ urlpatterns = [
         "posts/<int:post_pk>/delete/",
         PostsViewSet.as_view({"post": "delete"}),
         name="delete-post",
-    ),
+    ),  # Попробовать Router
     # Comments
     path(
         "posts/<int:post_pk>/comments/",

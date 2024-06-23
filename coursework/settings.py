@@ -31,11 +31,18 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+# Email
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "mailhog"
+EMAIL_PORT = 1025
+
 
 # Application definition
 
 INSTALLED_APPS = [
     "rest_framework",
+    "rest_framework.authtoken",
+    "social_django",
     "django_filters",
     "simple_history",
     "import_export",
@@ -48,6 +55,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "drf_yasg",
+    "django_celery_beat",
     "debug_toolbar",
 ]
 
@@ -61,6 +70,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "users.middleware.visit_middleware.VisitMiddleware",
+    "social_django.middleware.SocialAuthExceptionMiddleware",
 ]
 
 ROOT_URLCONF = "coursework.urls"
@@ -76,17 +87,59 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
 ]
 
-AUTHENTICATION_BACKENDS = (
-    # "users.backend.AuthBackend",
-    "django.contrib.auth.backends.ModelBackend",
+
+SOCIAL_AUTH_PIPELINE = (
+    "social_core.pipeline.social_auth.social_details",
+    "social_core.pipeline.social_auth.social_uid",
+    "social_core.pipeline.social_auth.auth_allowed",
+    "social_core.pipeline.social_auth.social_user",
+    "social_core.pipeline.user.get_username",
+    "social_core.pipeline.user.create_user",
+    "users.pipelines.create_user",
+    "social_core.pipeline.social_auth.associate_user",
+    "social_core.pipeline.social_auth.load_extra_data",
+    "social_core.pipeline.user.user_details",
 )
 
+AUTHENTICATION_BACKENDS = (
+    # "users.backend.AuthBackend",
+    # "social_core.backends.vk.VKOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+    "social_core.backends.google.GoogleOAuth2",
+)
+
+# SOCIAL_AUTH_VK_OAUTH2_KEY = "51956935"
+# SOCIAL_AUTH_VK_OAUTH2_SECRET = "x6i6nIbPgkvY1nsJtzok"
+# SOCIAL_AUTH_VK_OAUTH2_REDIRECT_URI = "http://localhost:8000/complete/vk-oauth2/"
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
+    "544137703907-rigt4qtdfmp9bulk0tu6laqujpie14um.apps.googleusercontent.com"
+)
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "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"
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = "http://localhost:8000/login/complete/google/"
+
+
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
 LOGIN_URL = "login"
+LOGOUT_URL = "logout"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
+SOCIAL_AUTH_URL_NAMESPACE = "social"
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = "/"
+SOCIAL_AUTH_LOGIN_ERROR_URL = "/login-error/"
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+]
+SOCIAL_AUTH_USER_MODEL = "users.CustomUser"
 
 WSGI_APPLICATION = "coursework.wsgi.application"
 
@@ -126,10 +179,39 @@ DATABASES = {
     }
 }
 
+# Redis
 
+REDIS_HOST = "localhost"
+REDIS_PORT = "6379"
+REDIS_URL = "redis://localhost:6379"
+
+# Celery Configuration Options
+
+CELERY_TIMEZONE = "Europe/Moscow"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_BROKER_URL = "redis://redis:6379/0"
+BROKER_URL = "redis://redis:6379/0"
+BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis:6379",
+        "KEY_PREFIX": "coursework",
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 AUTH_USER_MODEL = "users.CustomUser"
+
+
+# REST_FRAMEWORK = {
+#     "DEFAULT_AUTHENTICATION_CLASSES": [
+#         "rest_framework.authentication.TokenAuthentication",
+#     ],
+# }
 
 
 # Internationalization

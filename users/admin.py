@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Friend
+from .models import CustomUser, Friend, Visit
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 
@@ -77,7 +77,12 @@ class FriendAdmin(admin.ModelAdmin):
     date_hierarchy = "date_added"
 
 
+class VisitAdmin(admin.ModelAdmin):
+    list_display = ["user", "visit_date", "request_info"]
+
+
 # Register your models here.
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Friend, FriendAdmin)
+admin.site.register(Visit, VisitAdmin)

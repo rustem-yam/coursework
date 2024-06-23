@@ -42,3 +42,12 @@ class Friend(models.Model):
 
     def __str__(self):
         return str(self.user_1) + " " + str(self.user_2)
+
+
+class Visit(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    visit_date = models.DateTimeField(auto_now_add=True)
+    request_info = models.TextField()
+
+    def __str__(self):
+        return f"{self.visit_date} {self.user} | {self.request_info}"

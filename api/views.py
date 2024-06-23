@@ -1,13 +1,18 @@
 from rest_framework import status, generics, viewsets
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from django.views.decorators.vary import vary_on_cookie
 from rest_framework.decorators import action
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.conf import settings
+from rest_framework.permissions import IsAuthenticated
 from .serializers import (
     CreatePostSerializer,
     PostSerializer,
@@ -94,19 +99,24 @@ class PostsRetrieveView(APIView):
     serializer_class = PostSerializer
 
     def get(self, request, post_pk, format=None):
+        cache_key = f"post_{post_pk}"
         try:
-            post = Post.objects.get(pk=post_pk)
+            post = cache.get(key=cache_key)
+            if post is None:
+                post = Post.objects.get(pk=post_pk)
+                cache.set(key=cache_key, value=post, timeout=60 * 15)
         except Post.DoesNotExist:
             return Response(
                 {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-        serializer = self.serializer_class(post, many=True)
+        serializer = self.serializer_class(post, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class PostsViewSet(viewsets.ViewSet):
     serializer_class = PostSerializer
+    permission_classes = (IsAuthenticated,)
 
     @action(methods=["GET"], detail=False)
     def get_all(self, request):
@@ -251,7 +261,6 @@ class LikesPostView(APIView):
                 {"Not Found": "Post not found"}, status=status.HTTP_404_NOT_FOUND
             )
         likes = Like.objects.filter(post=post)
-
         return Response(likes.count(), status=status.HTTP_200_OK)
 
     def post(self, request, post_pk, format=None):

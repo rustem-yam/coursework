@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Most Liked Post of the Day</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+            }
+            .container {
+                width: 80%;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                background-color: #f9f9f9;
+            }
+            .post-title {
+                font-size: 24px;
+                font-weight: bold;
+            }
+            .post-content {
+                margin-top: 15px;
+            }
+            .likes-count {
+                margin-top: 20px;
+                color: #007bff;
+            }
+            .footer {
+                margin-top: 30px;
+                font-size: 12px;
+                color: #888;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>📈 Самый залайканный пост дня 📈</h1>
+            <p class="post-title">Автор: {{ post.user }}</p>
+            <div class="post-content">{{ post.text|safe }}</div>
+            <p class="likes-count">Лайков: {{ post.num_likes }}</p>
+            <div class="footer">
+                <p>
+                    Это письмо было отправлено автоматически системой нашей
+                    соцсети.
+                </p>
+            </div>
+        </div>
+    </body>
+</html>
