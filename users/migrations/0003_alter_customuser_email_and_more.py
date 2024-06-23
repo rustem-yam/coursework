@@ -6,18 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_alter_customuser_email_alter_customuser_firstname_and_more'),
+        ("users", "0002_alter_customuser_email_alter_customuser_firstname_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customuser',
-            name='email',
-            field=models.EmailField(default='test@test.test', max_length=254, unique=True),
+            model_name="customuser",
+            name="email",
+            field=models.EmailField(
+                default="test@test.test", max_length=254, unique=True
+            ),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='registration_date',
-            field=models.DateField(default='2000-01-01'),
+            model_name="customuser",
+            name="registration_date",
+            field=models.DateField(default="2000-01-01"),
         ),
     ]

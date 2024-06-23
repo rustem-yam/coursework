@@ -19,7 +19,8 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     "send-email-every-day": {
         "task": "send_top_post",
-        "schedule": crontab(hour=12, minute=00),
+        # "schedule": crontab(hour=12, minute=00),
+        "schedule": 120,
     },
     "save-visits-from-cache-to-db": {
         "task": "save_visits",

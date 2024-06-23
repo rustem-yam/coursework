@@ -45,7 +45,7 @@ class Friend(models.Model):
 
 
 class Visit(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, null=True, on_delete=models.CASCADE)
     visit_date = models.DateTimeField(auto_now_add=True)
     request_info = models.TextField()
 

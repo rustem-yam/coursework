@@ -1,5 +1,6 @@
 .prettierignore
-documentation.pdf
+*.pdf
+*.docx
 file.log
 __pycache__
 .venv
