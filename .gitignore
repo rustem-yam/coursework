@@ -5,3 +5,5 @@ file.log
 __pycache__
 .venv
 requirements.in
+settings.py
+celerybeat-schedule
